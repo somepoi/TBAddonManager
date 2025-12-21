@@ -14,3 +14,9 @@ license = {text = "MIT"}
 
 [tool.pdm]
 distribution = false
+
+[project.scripts]
+run-main = "main:main"
+
+[tool.pdm.scripts]
+run-main = "python main.py"
