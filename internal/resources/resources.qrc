@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>face.png</file>
+    </qresource>
+    <qresource prefix="/font">
+        <file>title.ttf</file>
+        <file>body.ttf</file>
+    </qresource>
+</RCC>
