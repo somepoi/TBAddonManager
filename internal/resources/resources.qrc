@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/img">
         <file>face.png</file>
+        <file>icon.ico</file>
     </qresource>
     <qresource prefix="/font">
         <file>title.ttf</file>

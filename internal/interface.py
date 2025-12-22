@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QEvent, QProcess, QThread, Signal
-from PySide6.QtGui import QFontDatabase
+from PySide6.QtGui import QFontDatabase, QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -44,6 +44,7 @@ class MainWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle(gt("Tiny Bunny Addon Manager"))
+        self.setWindowIcon(QIcon(":/img/icon.ico"))
         self.setStyleSheet("""
             QWidget { background-color: #1e1e1e; color: #dcdcdc; font-family: "Storopia"; font-size: 24px; }
             QLabel { color: #dcdcdc; font-family: "Razor Keen"; font-size: 64px; }
