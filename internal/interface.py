@@ -1,11 +1,21 @@
-from PySide6.QtCore import Qt, QEvent, QProcess, QThread, Signal
-from PySide6.QtGui import QFontDatabase, QIcon
+from PySide6.QtCore import (
+    QEvent,
+    QStandardPaths,
+    QThread,
+    Qt,
+    Signal,
+)
+from PySide6.QtGui import (
+    QFontDatabase,
+    QIcon,
+)
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -13,7 +23,7 @@ from PySide6.QtWidgets import (
 import subprocess, pathlib, sys, os
 
 import internal.resources_rc
-from internal.lang import get_translated as gt
+from internal.lang import gt
 
 def init_fonts():
     fonts = {}
@@ -46,14 +56,12 @@ class MainWindow(QWidget):
         self.setWindowTitle(gt("Tiny Bunny Addon Manager"))
         self.setWindowIcon(QIcon(":/img/icon.ico"))
         self.setStyleSheet("""
-            QWidget { background-color: #1e1e1e; color: #dcdcdc; font-family: "Storopia"; font-size: 24px; }
+            QWidget { background-color: #1e1e1e; color: #dcdcdc; font-family: "Kazmann Sans"; font-size: 36px; }
             QLabel { color: #dcdcdc; font-family: "Razor Keen"; font-size: 64px; }
 
-            QVBoxLayout { margin: 128px; }
-
-            QPushButton { background-color: rgba(255,255,255,0.05); border: 4px outset rgba(32,32,32,1.0); padding: 4px 8px; }
+            QPushButton { background-color: rgba(255,255,255,0.05); border: 4px outset rgba(32,32,32,1.0); padding: 16px 64px; }
             QPushButton:hover { background-color: rgba(255,255,255,0.15); border: 4px outset rgba(32,32,32,1.0); }
-            QPushButton:pressed { border: 4px inset rgba(32,32,32,1.0); }
+            QPushButton:pressed { background-color: rgba(255,255,255,0.05); border: 4px inset rgba(32,32,32,1.0); }
             """)
 
         # Main Layout and Logo
@@ -72,9 +80,9 @@ class MainWindow(QWidget):
         layout_cb = QHBoxLayout()
         layout_cb.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout_cb.setSpacing(32)
-        self.cb_dev = QCheckBox("Режим разработчика")
-        self.cb_console = QCheckBox("Внутриигровая консоль")
-        self.cb_debug = QCheckBox("Внешняя консоль")
+        self.cb_dev = QCheckBox(gt("Developer mode"))
+        self.cb_console = QCheckBox(gt("In-game console"))
+        self.cb_debug = QCheckBox(gt("External console"))
         layout_cb.addWidget(self.cb_dev)
         layout_cb.addWidget(self.cb_console)
         layout_cb.addWidget(self.cb_debug)
@@ -84,7 +92,7 @@ class MainWindow(QWidget):
         # Buttons
         layout_btn = QHBoxLayout()
         layout_btn.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.btn_start = QPushButton("Запустить игру!")
+        self.btn_start = QPushButton(gt("Launch the game!"))
         self.btn_start.clicked.connect(self._start_game)
         layout_btn.addWidget(self.btn_start)
         self.main_layout.addLayout(layout_btn)
@@ -93,15 +101,14 @@ class MainWindow(QWidget):
 
     def _start_game(self):
 
-        print(f"config.developer = {self.cb_dev.isChecked()}\nconfig.console = {self.cb_console.isChecked()}\nexternal_console = {self.cb_debug.isChecked()}")
-
-        gamefolder = str(pathlib.Path(sys.executable).parent)
-        while True:
-            if not os.path.exists(str(pathlib.Path(gamefolder) / "lib" / "py3-windows-x86_64" / "python.exe")) or not os.path.exists(str(pathlib.Path(gamefolder) / "TinyBunny_am.py")):
-                gamefolder = QFileDialog.getExistingDirectory(self, "Choose path to the Tiny Bunny folder", "", QFileDialog.Option.ShowDirsOnly)
-                if gamefolder == "": return
-            else:
-                break
+        gamefolder = str(pathlib.Path(sys.executable).parent) if getattr(sys, 'frozen', False) else QFileDialog.getExistingDirectory(self, "Select the path to the game folder", QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DesktopLocation), QFileDialog.Option.ShowDirsOnly)
+        if not os.path.exists(str(pathlib.Path(gamefolder) / "lib" / "py3-windows-x86_64" / "python.exe")) or not os.path.exists(str(pathlib.Path(gamefolder) / "TinyBunny_am.py")):
+            QMessageBox.critical(self,
+                    gt("Error!"),
+                    gt("The program could not find Tiny Bunny game folder!"),
+                    QMessageBox.StandardButton.Ok
+            )
+            return
 
         args = [str(pathlib.Path(gamefolder) / "lib" / "py3-windows-x86_64" / ("python.exe" if self.cb_debug.isChecked() else "pythonw.exe")), str(pathlib.Path(gamefolder) / "TinyBunny_am.py"), "-addon-manager"]
         if self.cb_console:
