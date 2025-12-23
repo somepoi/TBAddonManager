@@ -3,16 +3,31 @@ from locale import getdefaultlocale
 
 lang = {
     "Tiny Bunny Addon Manager": {
-        "ru_RU": "Менеджер Аддонов для игры Tiny Bunny"
+        "ru_RU": "Менеджер аддонов для игры Tiny Bunny"
+    },
+    "Always run with addon manager": {
+        "ru_RU": "Всегда запускать с менеджером аддонов"
+    },
+    "Game will have addon compatibility when run without the launcher.": {
+        "ru_RU": "Игра будет поддерживать аддоны, если она запущена без лаунчера."
     },
     "Developer mode": {
         "ru_RU": "Режим разработчика"
     },
+    "Game will have developer mode enabled (config.developer).": {
+        "ru_RU": "В игре будет включён режим разработчика (config.developer)."
+    },
     "In-game console": {
         "ru_RU": "Внутриигровая консоль"
     },
+    "Game will have in-game console enabled (config.console).": {
+        "ru_RU": "В игре будет включена внутриигровая консоль (config.console)."
+    },
     "External console": {
         "ru_RU": "Внешняя консоль"
+    },
+    "Game will launch with external console enabled, allowing easier debugging of addons.": {
+        "ru_RU": "Игра будет запущена с внешней консолью, что упростит отладку аддонов."
     },
     "Launch the game!": {
         "ru_RU": "Запустить игру!"
@@ -21,7 +36,7 @@ lang = {
         "ru_RU": "Ошибка!"
     },
     "The program could not find Tiny Bunny game folder!": {
-        "ru_RU": "Программа не смогла найти папку игры Зайчик!"
+        "ru_RU": "Программа не смогла найти папку игры Tiny Bunny!"
     }
 }
 
