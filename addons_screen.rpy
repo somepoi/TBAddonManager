@@ -1,12 +1,47 @@
-# TODO: парс аватарки из стима по номеру мода
-# TODO: парс имени автора(ов) из стима по номеру мода
-# TODO: парс описания из стима по номеру мода
+# TODO: парс аватарки из стима по номеру аддона
+# TODO: парс имени автора(ов) из стима по номеру аддона
+# TODO: парс описания из стима по номеру аддона
 # TODO: парс последней даты обновления
-# TODO: починить пустое пространство у описания мода в правой панели
-# TODO: починить прыжки описания мода в правой панели из-за смены размера шрифта имени мода
-# TODO: починить вывод "ничего не найдено"
-# TODO: починить вывод "моды не установлены"
-# TODO: заменить кнопку "назад"
+# FIXME: заменить кнопку "назад"
+
+screen addon_empty_state(title, subtitle):
+    frame:
+        xsize 1100
+        ysize 540
+        background None
+        padding (15, 15)
+        
+        vbox:
+            xalign 0.5
+            yalign 0.5
+            spacing 20
+            
+            text title:
+                size 62
+                font "font/russia.ttf"
+                color "#666666"
+                xalign 0.5
+            
+            text subtitle:
+                size 50
+                font "font/russia.ttf"
+                color "#555555"
+                xalign 0.5
+
+screen addon_info_placeholder(message):
+    vbox:
+        xalign 0.5
+        yalign 0.5
+        spacing 30
+        
+        text "?" size 240 color "#333333" xalign 0.5 font "font/russia.ttf"
+        
+        text message:
+            font "font/russia.ttf"
+            size 50
+            color "#666666"
+            text_align 0.5
+            xalign 0.5
 
 screen addons:
     modal True 
@@ -14,7 +49,7 @@ screen addons:
     style_prefix "main_menu"
 
     key "game_menu":
-        action Return()
+        action [SetVariable("addon_search_query", ""), SetVariable("selected_addon", ""), Return()]
     
     add gui.main_menu_background
     add "menu002_1"
@@ -27,33 +62,33 @@ screen addons:
     add "bg_black" at mm_bg_diss_1to0
 
     vbox spacing 90:
-        if addons:
-            frame:
-                area(100, 80, 1720, 920)
-                background Solid("#000000cc")
-                padding (20, 20)
+        frame:
+            area(100, 80, 1720, 920)
+            background Solid("#000000cc")
+            padding (20, 20)
+            
+            hbox:
+                spacing 20
                 
-                hbox:
-                    spacing 20
+                # Левая панель - список аддонов
+                frame:
+                    xsize 1100
+                    ysize 880
+                    background Solid("#00000099")
+                    padding (15, 15)
                     
-                    # список модов
-                    frame:
-                        xsize 1100
-                        ysize 880
-                        background Solid("#00000099")
-                        padding (15, 15)
+                    vbox:
+                        spacing 10
                         
-                        vbox:
-                            spacing 10
+                        hbox:
+                            spacing 20
+                            xfill True
                             
-                            hbox:
-                                spacing 20
-                                xfill True
-                                
-                                text "МЕНЕДЖЕР АДДОНОВ" size 48 color "#ffffff" font "font/russia.ttf" 
-                                
-                                null width 20
-                                
+                            text "МЕНЕДЖЕР АДДОНОВ" size 48 color "#ffffff" font "font/russia.ttf" 
+                            
+                            null width 20
+                            
+                            if addons:
                                 textbutton ("{size=48}Сортировка: " + ("Я-А" if addon_sort_reverse else "А-Я") + "{/size}"):
                                     action Function(toggle_addon_sort)
                                     xalign 1.0
@@ -61,9 +96,11 @@ screen addons:
                                     text_font "font/russia.ttf" 
                                     text_idle_color "#aaaaaa"
                                     text_hover_color "#ffffff"
-                            
+                        
+                        if addons:
                             null height 15
                             
+                            # Поисковая строка
                             frame:
                                 xfill True
                                 background At(AlphaMask("#ffffff22", Frame("TBAddonManager/assets/images/mask.webp", Borders(30, 30, 30, 30))), Transform(alpha=0.65))
@@ -93,9 +130,10 @@ screen addons:
                                                 size 40
                                                 color "#666666"
                                                 yalign 0.5
+                            
                             null height 10
                             
-                            # Отображение количества найденных модов
+                            # Счётчик найденных аддонов
                             if addon_search_query:
                                 $ filtered_count = len(get_filtered_addons())
                                 text "Найдено: [filtered_count]":
@@ -106,19 +144,19 @@ screen addons:
                             
                             null height 5
                             
-                            viewport id "addons_viewport":
-                                draggable True
-                                mousewheel True
-                                scrollbars "vertical"
-                                xsize 1060
-                                ysize 690
-                                
-                                vbox:
-                                    spacing 8
+                            $ filtered_addons = get_filtered_addons()
+
+                            if filtered_addons:
+                                viewport id "addons_viewport":
+                                    draggable True
+                                    mousewheel True
+                                    scrollbars "vertical"
+                                    xsize 1060
+                                    ysize 690
                                     
-                                    $ filtered_addons = get_filtered_addons()
-                                    
-                                    if filtered_addons:
+                                    vbox:
+                                        spacing 8
+                                        
                                         for label, addon in filtered_addons:
                                             button:
                                                 xsize 1020
@@ -155,153 +193,105 @@ screen addons:
                                                             xalign 0.0
                                                         
                                                         if addon.authors:
-                                                            text addon.get_authors_text():
+                                                            text addon.get_authors():
                                                                 size 28
                                                                 color "#aaaaaa"
                                                                 xmaximum 900
                                                                 xalign 0.0
-                                    else:
-                                        vbox:
-                                            xalign 0.5
-                                            yalign 0.5
-                                            spacing 20
-                                            
-                                            text "🔍" size 80 color "#333333" xalign 0.5
-                                            
-                                            text "Ничего не найдено":
-                                                size 32
-                                                color "#666666"
-                                                xalign 0.5
-                                            
-                                            text "Попробуйте изменить поисковый запрос":
-                                                size 20
-                                                color "#555555"
-                                                xalign 0.5
-
-                    # инфа о моде
-                    frame:
-                        xsize 560
-                        ysize 880
-                        background Solid("#00000099")
-                        padding (15, 15)
-                        
-                        if selected_addon:
-                            vbox:
-                                spacing 20
-                                xfill True
-                                
-                                text "ИНФОРМАЦИЯ ОБ АДДОНЕ" size 48 color "#ffffff" font "font/russia.ttf" 
-                                
-                                null height 10
-                                
-                                if selected_addon.avatar:
-                                    frame:
-                                        xalign 0.5
-                                        padding (10, 10)
-                                        xmaximum 256
-                                        ymaximum 256
-                                        
-                                        add selected_addon.avatar:
-                                            fit "contain"
-                                            xalign 0.5
-                                            yalign 0.5
-                                else:
-                                    add "TBAddonManager/assets/images/avatar_placeholder.png" xsize 256 ysize 256 xalign 0.5
-                                
-                                null height 20
-                                
-                                text selected_addon.name:
-                                    size selected_addon.get_adaptive_name_size()
-                                    color "#ffffff" 
-                                    font "font/russia.ttf" 
-                                    xalign 0.5
-                                    text_align 0.5
-                                    xmaximum 500
-                                
-                                if selected_addon.authors:
-                                    text selected_addon.get_full_authors_text():
-                                        size 32
-                                        color "#aaaaaa"
-                                        xalign 0.5
-                                        text_align 0.5
-                                        xmaximum 500
-                                
-                                #null height 20
-                                
-                                python:
-                                    import math
-                                    desc_text = selected_addon.description
-                                    chars_per_line = 50
-                                    estimated_lines = math.ceil(len(desc_text) / chars_per_line)
-                                    line_height = 24  # примерная высота строки
-                                    estimated_height = estimated_lines * line_height
-                                    needs_scrollbar = estimated_height > 220
-                                
-                                # Описание с условным скроллбаром
-                                frame:
-                                    xfill True
-                                    background Solid("#ffffff11")
-                                    padding (15, 15)
-                                    xmaximum 500
-                                    ymaximum 250
-                                    
-                                    if needs_scrollbar:
-                                        viewport id "description_viewport":
-                                            draggable True
-                                            mousewheel True
-                                            scrollbars "vertical"
-                                            xsize 450
-                                            ysize 220
-                                            
-                                            text selected_addon.description:
-                                                size 18
-                                                font "font/GenEiAntiqueNv5-M.ttf"
-                                                color "#dddddd"
-                                                text_align 0.0
-                                                xalign 0.0
-                                                xmaximum 440
-                                    else:
-                                        viewport id "description_viewport_no_scroll":
-                                            xsize 470
-                                            ysize 220
-                                            
-                                            text selected_addon.description:
-                                                size 18
-                                                font "font/GenEiAntiqueNv5-M.ttf"
-                                                color "#dddddd"
-                                                text_align 0.0
-                                                xalign 0.0
-                                                xmaximum 470
-                                                
+                            else:
+                                use addon_empty_state("Ничего не найдено", "Попробуйте изменить поисковый запрос")
                         else:
-                            # Заглушка, когда ничего не выбрано
-                            vbox:
-                                xalign 0.5
-                                yalign 0.5
-                                spacing 30
-                                
-                                text "?" size 120 color "#333333" xalign 0.5
-                                
-                                text "Выберите мод из списка\nчтобы увидеть информацию":
-                                    size 20
-                                    color "#666666"
-                                    text_align 0.5
-                                    xalign 0.5
-        else:
-            frame:
-                xalign 0.5
-                yalign 0.4
-                background Solid("#000000cc")
-                padding (50, 50)
-                
-                vbox:
-                    spacing 30
+                            null height 100
+                            use addon_empty_state("Аддоны не найдены", "Установите аддоны в папку игры")
+
+                # Правая панель - информация о аддоне
+                frame:
+                    xsize 560
+                    ysize 880
+                    background Solid("#00000099")
+                    padding (15, 15)
                     
-                    text "МОДЫ НЕ НАЙДЕНЫ" size 40 color "#ffffff" bold True xalign 0.5
-                    text "Установите моды в папку игры":
-                        size 24
-                        color "#aaaaaa"
-                        xalign 0.5
+                    if selected_addon:
+                        vbox:
+                            spacing 20
+                            xfill True
+                            
+                            text "ИНФОРМАЦИЯ ОБ АДДОНЕ" size 48 color "#ffffff" font "font/russia.ttf" 
+                            
+                            null height 10
+                            
+                            if selected_addon.avatar:
+                                frame:
+                                    xalign 0.5
+                                    padding (10, 10)
+                                    xmaximum 256
+                                    ymaximum 256
+                                    
+                                    add selected_addon.avatar:
+                                        fit "contain"
+                                        xalign 0.5
+                                        yalign 0.5
+                            else:
+                                add "TBAddonManager/assets/images/avatar_placeholder.png" xsize 256 ysize 256 xalign 0.5
+                            
+                            null height 20
+                            
+                            text selected_addon.name:
+                                size selected_addon.get_adaptive_name_size()
+                                color "#ffffff" 
+                                font "font/russia.ttf" 
+                                xalign 0.5
+                                text_align 0.5
+                                xmaximum 500
+                            
+                            if selected_addon.authors:
+                                text selected_addon.get_authors():
+                                    size 32
+                                    color "#aaaaaa"
+                                    xalign 0.5
+                                    text_align 0.5
+                                    xmaximum 500
+                            
+                            # чек, надо ли нам показывать скроллбар в зависимости от длины описания аддона
+                            python:
+                                import math
+                                desc_text = selected_addon.description
+                                chars_per_line = 50
+                                estimated_lines = math.ceil(len(desc_text) / chars_per_line)
+                                line_height = 24
+                                estimated_height = estimated_lines * line_height
+                                needs_scrollbar = estimated_height > 220
+                            
+                            frame:
+                                xfill True
+                                yfill True
+                                background Solid("#ffffff11")
+                                padding (15, 15)
+                                xmaximum 525
+                                ymaximum 500
+                                
+                                viewport id "description_viewport":
+                                    draggable True
+                                    mousewheel True
+                                    scrollbars ("vertical" if needs_scrollbar else None)
+                                    xsize 550
+                                    #ysize 220
+                                    #xfill True
+                                    #xmaximum 525
+                                    yfill True
+
+                                    text selected_addon.description:
+                                        size 18
+                                        font "font/GenEiAntiqueNv5-M.ttf"
+                                        color "#dddddd"
+                                        text_align 0.0
+                                        xalign 0.0
+                                        xmaximum 500
+                    else:
+                        if addons:
+                            use addon_info_placeholder("Выберите аддон из списка\nчтобы увидеть информацию")
+                        else:
+                            use addon_info_placeholder("Установите аддоны\nчтобы увидеть информацию")
 
         frame:
             xalign 0.5
@@ -314,7 +304,7 @@ screen addons:
                 padding (30, 20)
                 xmaximum 150
                 ymaximum 50
-                action Return()
+                action [SetVariable("addon_search_query", ""), SetVariable("selected_addon", ""), Return()]
 
                 text "Назад":
                     size 38

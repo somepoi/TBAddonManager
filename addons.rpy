@@ -4,7 +4,7 @@ init python:
             self.label = label
             self.name = name
             self.description = description
-            self.avatar = avatar  # Путь к изображению аватарки мода
+            self.avatar = avatar
             if authors is None:
                 self.authors = []
             elif isinstance(authors, str):
@@ -35,15 +35,7 @@ init python:
             else:
                 return 35
         
-        def get_authors_text(self):
-            if not self.authors:
-                return ""
-            elif len(self.authors) == 1:
-                return self.authors[0]
-            else:
-                return ", ".join(self.authors)
-        
-        def get_full_authors_text(self):
+        def get_authors(self):
             if not self.authors:
                 return ""
             elif len(self.authors) == 1:
@@ -55,19 +47,21 @@ init python:
             if not search_query:
                 return True
             
+            search_query = latinify(search_query)
+
             query_lower = search_query.lower()
-            
+        
             # Название
-            if query_lower in self.name.lower():
+            if query_lower in latinify(self.name.lower()) or search_query in latinify(self.name):
                 return True
             
             # Описание
-            if query_lower in self.description.lower():
+            if query_lower in latinify(self.description.lower()) or search_query in latinify(self.description):
                 return True
             
             # Авторы
             for author in self.authors:
-                if query_lower in author.lower():
+                if query_lower in latinify(author.lower()) or search_query in latinify(author):
                     return True
             
             return False
@@ -77,12 +71,21 @@ init python:
     # Переменная для выбранного мода (для показа деталей)
     selected_addon = None
     
-    # Переменная для сортировки (False = A-Z, True = Z-A)
+    # Сортировка (False = A-Z, True = Z-A)
     addon_sort_reverse = False
     
-    # Переменная для поискового запроса
+    # Поисковой запрос
     addon_search_query = ""
-    
+
+    cyr_chars = "йцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ\"№;:?"
+    lat_chars = "qwertyuiop[]asdfghjkl;'zxcvbnm,.QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>@#$^&"
+
+    def latinify(s: str):
+        return s.translate(str.maketrans(cyr_chars, lat_chars))
+
+    def delatinify(s: str):
+        return s.translate(str.maketrans(lat_chars, cyr_chars))
+
     def get_sorted_addons():
         return sorted(addons.items(), key=lambda x: x[1].name, reverse=addon_sort_reverse)
     
@@ -94,7 +97,3 @@ init python:
     def toggle_addon_sort():
         global addon_sort_reverse
         addon_sort_reverse = not addon_sort_reverse
-    
-    def clear_search():
-        global addon_search_query
-        addon_search_query = ""

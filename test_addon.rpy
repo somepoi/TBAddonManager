@@ -7,7 +7,6 @@ init:
         authors=u"WrongTrail",
     )
     
-    # Пример с двумя авторами
     $ addons["disoul"] = Addon(
         label="disoul",
         name="Дисоул",
@@ -16,7 +15,6 @@ init:
         authors=[u"ohfkgsofsex", u"CLaw"],
     )
     
-    # Пример с тремя авторами
     $ addons["space_adventure"] = Addon(
         label="space_adventure",
         name="Космическое приключение",
@@ -25,7 +23,6 @@ init:
         authors=[u"Space Explorer", u"Cosmic Dreamer", u"Star Voyager"],
     )
     
-    # Пример с пятью авторами
     $ addons["mystery_manor"] = Addon(
         label="mystery_manor",
         name="Таинственное поместье",
