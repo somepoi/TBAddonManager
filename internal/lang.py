@@ -5,12 +5,6 @@ lang = {
     "Tiny Bunny Addon Manager": {
         "ru_RU": "Менеджер аддонов для игры Tiny Bunny"
     },
-    "Always run with addon manager": {
-        "ru_RU": "Всегда запускать с менеджером аддонов"
-    },
-    "Game will have addon compatibility when run without the launcher.": {
-        "ru_RU": "Игра будет поддерживать аддоны, если она запущена без лаунчера."
-    },
     "Developer mode": {
         "ru_RU": "Режим разработчика"
     },

@@ -88,7 +88,6 @@ class MainWindow(QWidget):
         self.cb_console = QCheckBox()
         self.cb_extconsole = QCheckBox()
         for var, text, tooltip in [
-            (self.cb_enabled_by_default,    gt("Always run with addon manager"),   gt("Game will have addon compatibility when run without the launcher.")),
             (self.cb_developer,             gt("Developer mode"),                  gt("Game will have developer mode enabled (config.developer).")),
             (self.cb_console,               gt("In-game console"),                 gt("Game will have in-game console enabled (config.console).")),
             (self.cb_extconsole,            gt("External console"),                gt("Game will launch with external console enabled, allowing easier debugging of addons.")),
@@ -111,18 +110,15 @@ class MainWindow(QWidget):
 
         config_values = load()
 
-        self.cb_enabled_by_default.setChecked(config_values[0])
-        self.cb_developer.setChecked(config_values[1])
-        self.cb_console.setChecked(config_values[2])
-        self.cb_extconsole.setChecked(config_values[3])
+        self.cb_developer.setChecked(config_values[0])
+        self.cb_console.setChecked(config_values[1])
+        self.cb_extconsole.setChecked(config_values[2])
 
     def _start_game(self):
 
-        args = [str(Path(sys.executable).parent / "lib" / "py3-windows-x86_64" / ("python.exe" if self.cb_extconsole.isChecked() else "pythonw.exe")), str(Path(sys.executable).parent / "TinyBunny_am.py"), "-addon-manager"]
-        if self.cb_console.isChecked():
-            args.append("-console")
-        if self.cb_developer.isChecked():
-            args.append("-developer")
+        save(self.cb_developer.isChecked(), self.cb_console.isChecked(), self.cb_extconsole.isChecked())
+
+        args = [str(Path(sys.executable).parent / "lib" / "py3-windows-x86_64" / ("python.exe" if self.cb_extconsole.isChecked() else "pythonw.exe")), str(Path(sys.executable).parent / "TinyBunny.py")]
 
         self.process = GameRunner(self, args, self.cb_extconsole.isChecked())
         self.process.finished.connect(self._on_process_finished)
@@ -133,4 +129,4 @@ class MainWindow(QWidget):
         self.show()
 
     def closeEvent(self, event: QEvent):
-        save(self.cb_enabled_by_default.isChecked(), self.cb_developer.isChecked(), self.cb_console.isChecked(), self.cb_extconsole.isChecked())
+        save(self.cb_developer.isChecked(), self.cb_console.isChecked(), self.cb_extconsole.isChecked())

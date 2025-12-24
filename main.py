@@ -10,7 +10,7 @@ if __name__ == "__main__":
     init_fonts()
     window = MainWindow()
     window.show()
-    if not getattr(sys, 'frozen', False) or not os.path.exists(str(Path(sys.executable).parent / "lib" / "py3-windows-x86_64" / "python.exe")) or not os.path.exists(str(Path(sys.executable).parent / "TinyBunny_am.py")):
+    if not getattr(sys, 'frozen', False) or not os.path.exists(str(Path(sys.executable).parent / "lib" / "py3-windows-x86_64" / "python.exe")) or not os.path.exists(str(Path(sys.executable).parent / "TinyBunny.py")):
         QMessageBox.critical(window,
             gt("Error!"),
             gt("The program could not find Tiny Bunny game folder!"),
