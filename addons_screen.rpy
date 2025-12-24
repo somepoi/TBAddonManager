@@ -2,7 +2,6 @@
 # TODO: парс имени автора(ов) из стима по номеру аддона
 # TODO: парс описания из стима по номеру аддона
 # TODO: парс последней даты обновления
-# TODO: поправить размеры кнопки "назад" (снизу выезжет за экран чут-чут)
 # TODO: заняться рефакторингом кода, пора переезжать на стили
 
 init -999:
@@ -98,7 +97,7 @@ init -999:
             add "chastichka_1_2"
             add "bg_black" at mm_bg_diss_1to0
 
-            vbox spacing 80:
+            vbox spacing 78:
                 frame:
                     area(100, 80, 1720, 920)
                     background Solid("#000000cc")
@@ -190,7 +189,6 @@ init -999:
 
                                     null height 10
 
-                                    # Счётчик найденных аддонов
                                     if tbam_store.addon_search_query:
                                         $ filtered_count = len(tbam_store.get_filtered_addons())
                                         text _("Найдено: [filtered_count]"):
