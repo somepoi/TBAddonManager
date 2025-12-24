@@ -7,6 +7,12 @@
 init -999:
 
     if getattr(renpy.bootstrap, "tbam_initialized", False):
+        
+        style addons_button is main_menu_button:
+            hover_background "interface/main_meny/plaska.png"
+        style addons_button_text is main_menu_button_text:
+            color "#fff"
+            hover_color "#000000"
 
         screen addon_empty_state(title, subtitle):
             frame:
@@ -65,7 +71,7 @@ init -999:
             add "chastichka_1_2"
             add "bg_black" at mm_bg_diss_1to0
 
-            vbox spacing 90:
+            vbox spacing 80:
                 frame:
                     area(100, 80, 1720, 920)
                     background Solid("#000000cc")
@@ -279,9 +285,6 @@ init -999:
                                             mousewheel True
                                             scrollbars ("vertical" if needs_scrollbar else None)
                                             xsize 550
-                                            #ysize 220
-                                            #xfill True
-                                            #xmaximum 525
                                             yfill True
 
                                             text tbam_store.selected_addon.description:
@@ -296,20 +299,7 @@ init -999:
                                     use addon_info_placeholder("Выберите аддон из списка\nчтобы увидеть информацию")
                                 else:
                                     use addon_info_placeholder("Установите аддоны\nчтобы увидеть информацию")
-
-                frame:
+                style_group "addons"
+                textbutton _("Назад"):
                     xalign 0.5
-                    background Solid("#00000099")
-                    padding (5, 5)
-
-                    button:
-                        background Solid("#ffffff11")
-                        hover_background Solid("#ffffff33")
-                        padding (30, 20)
-                        xmaximum 150
-                        ymaximum 50
-                        action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return()]
-
-                        text "Назад":
-                            size 38
-                            color "#ffffff"
+                    action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return()]
