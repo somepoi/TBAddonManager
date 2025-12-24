@@ -2,11 +2,29 @@
 # TODO: парс имени автора(ов) из стима по номеру аддона
 # TODO: парс описания из стима по номеру аддона
 # TODO: парс последней даты обновления
-# FIXME: заменить кнопку "назад"
+# TODO: поправить размеры кнопки "назад" (снизу выезжет за экран чут-чут)
+# TODO: заняться рефакторингом кода, пора переезжать на стили
 
 init -999:
 
     if getattr(renpy.bootstrap, "tbam_initialized", False):
+
+        
+        style addons_button is main_menu_button:
+            background "interface/button.png"
+            hover_background "TBAddonManager/assets/images/button_hover.png"
+            xminimum 438
+            yminimum 86
+
+        style addons_button_text is main_menu_button_text:
+            color "#000"
+            hover_color "#fff"
+            text_align 0.5
+            size 38
+        
+        style addons_inside_button is main_menu_button
+        style addons_inside_button_text is main_menu_button_text
+
         screen addon_empty_state(title, subtitle):
             frame:
                 xsize 1100
@@ -49,7 +67,7 @@ init -999:
         screen addons:
             modal True
             tag menu
-            style_prefix "main_menu"
+            style_prefix "addons"
 
             key "game_menu":
                 action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return()]
@@ -93,6 +111,7 @@ init -999:
 
                                     if tbam_store.addons:
                                         textbutton ("{size=48}Сортировка: %s{/size}") % ("Я-А" if tbam_store.addon_sort_reverse else "А-Я"):
+                                            style_group "addons_inside_button"
                                             action Function(tbam_store.toggle_addon_sort)
                                             xalign 1.0
                                             yalign 0.5
@@ -293,7 +312,6 @@ init -999:
                                     use addon_info_placeholder("Выберите аддон из списка\nчтобы увидеть информацию")
                                 else:
                                     use addon_info_placeholder("Установите аддоны\nчтобы увидеть информацию")
-
                 textbutton _("Назад"):
                     xalign 0.5
                     action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return()]
