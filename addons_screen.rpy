@@ -7,13 +7,6 @@
 init -999:
 
     if getattr(renpy.bootstrap, "tbam_initialized", False):
-        
-        style addons_button is main_menu_button:
-            hover_background "interface/main_meny/plaska.png"
-        style addons_button_text is main_menu_button_text:
-            color "#fff"
-            hover_color "#000000"
-
         screen addon_empty_state(title, subtitle):
             frame:
                 xsize 1100
@@ -232,6 +225,7 @@ init -999:
 
                                     if tbam_store.selected_addon.avatar:
                                         frame:
+                                            background None
                                             xalign 0.5
                                             padding (10, 10)
                                             xmaximum 256
@@ -299,7 +293,7 @@ init -999:
                                     use addon_info_placeholder("Выберите аддон из списка\nчтобы увидеть информацию")
                                 else:
                                     use addon_info_placeholder("Установите аддоны\nчтобы увидеть информацию")
-                style_group "addons"
+
                 textbutton _("Назад"):
                     xalign 0.5
                     action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return()]
