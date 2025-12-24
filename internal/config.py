@@ -2,7 +2,7 @@ from configparser import ConfigParser
 import sys
 from pathlib import Path
 
-def save(enabled_by_default: bool, developer: bool, console: bool, extconsole: bool):
+def save(developer: bool, console: bool, extconsole: bool):
     ini = ConfigParser()
     ini.add_section("gameconfig")
     ini["gameconfig"]["enabled"] = "1"
