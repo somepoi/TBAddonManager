@@ -37,15 +37,21 @@ init -999:
                     yalign 0.5
                     spacing 20
 
-                    text title:
+                    text _(title):
                         size 62
-                        font "font/russia.ttf"
+                        if preferences.language in ("japan", "chinese"):
+                            font other_font_interface
+                        else:
+                            font "font/russia.ttf"
                         color "#666666"
                         xalign 0.5
 
-                    text subtitle:
+                    text _(subtitle):
                         size 50
-                        font "font/russia.ttf"
+                        if preferences.language in ("japan", "chinese"):
+                            font other_font_interface
+                        else:
+                            font "font/russia.ttf"
                         color "#555555"
                         xalign 0.5
 
@@ -55,10 +61,20 @@ init -999:
                 yalign 0.5
                 spacing 30
 
-                text "?" size 240 color "#333333" xalign 0.5 font "font/russia.ttf"
+                text "?":
+                    size 240
+                    color "#333333"
+                    xalign 0.5
+                    if preferences.language in ("japan", "chinese"):
+                        font other_font_interface
+                    else:
+                        font "font/russia.ttf"
 
-                text message:
-                    font "font/russia.ttf"
+                text _(message):
+                    if preferences.language in ("japan", "chinese"):
+                        font other_font_interface
+                    else:
+                        font "font/russia.ttf"
                     size 50
                     color "#666666"
                     text_align 0.5
@@ -105,17 +121,33 @@ init -999:
                                     spacing 20
                                     xfill True
 
-                                    text "МЕНЕДЖЕР АДДОНОВ" size 48 color "#ffffff" font "font/russia.ttf"
+                                    text _("МЕНЕДЖЕР АДДОНОВ"):
+                                        size 48
+                                        color "#ffffff"
+                                        if preferences.language in ("japan", "chinese"):
+                                            font other_font_interface
+                                        else:
+                                            font "font/russia.ttf"
 
                                     null width 20
 
                                     if tbam_store.addons:
-                                        textbutton ("{size=48}Сортировка: %s{/size}") % ("Я-А" if tbam_store.addon_sort_reverse else "А-Я"):
+                                        # Такая реализация для правильной работы переводчика
+                                        if tbam_store.addon_sort_reverse:
+                                            $ sort_text = _("Сортировка: Я-А")
+                                        else:
+                                            $ sort_text = _("Сортировка: А-Я")
+                                        
+                                        textbutton sort_text:
                                             style_group "addons_inside_button"
                                             action Function(tbam_store.toggle_addon_sort)
                                             xalign 1.0
                                             yalign 0.5
-                                            text_font "font/russia.ttf"
+                                            if preferences.language in ("japan", "chinese"):
+                                                text_font other_font_interface
+                                            else:
+                                                text_font "font/russia.ttf"
+                                            text_size 48
                                             text_idle_color "#aaaaaa"
                                             text_hover_color "#ffffff"
 
@@ -147,8 +179,11 @@ init -999:
                                                     copypaste True
 
                                                 if not tbam_store.addon_search_query:
-                                                    text "Поиск по названию, описанию или автору...":
-                                                        font "font/russia.ttf"
+                                                    text _("Поиск по названию, описанию или автору..."):
+                                                        if preferences.language in ("japan", "chinese"):
+                                                            font other_font_interface
+                                                        else:
+                                                            font "font/russia.ttf"
                                                         size 40
                                                         color "#666666"
                                                         yalign 0.5
@@ -158,8 +193,11 @@ init -999:
                                     # Счётчик найденных аддонов
                                     if tbam_store.addon_search_query:
                                         $ filtered_count = len(tbam_store.get_filtered_addons())
-                                        text "Найдено: [filtered_count]":
-                                            font "font/russia.ttf"
+                                        text _("Найдено: [filtered_count]"):
+                                            if preferences.language in ("japan", "chinese"):
+                                                font other_font_interface
+                                            else:
+                                                font "font/russia.ttf"
                                             size 32
                                             color "#aaaaaa"
                                             xalign 0.0
@@ -238,7 +276,13 @@ init -999:
                                     spacing 20
                                     xfill True
 
-                                    text "ИНФОРМАЦИЯ ОБ АДДОНЕ" size 48 color "#ffffff" font "font/russia.ttf" 
+                                    text _("ИНФОРМАЦИЯ ОБ АДДОНЕ"):
+                                        size 48
+                                        color "#ffffff"
+                                        if preferences.language in ("japan", "chinese"):
+                                            font other_font_interface
+                                        else:
+                                            font "font/russia.ttf"
 
                                     null height 10
 
@@ -312,6 +356,7 @@ init -999:
                                     use addon_info_placeholder("Выберите аддон из списка\nчтобы увидеть информацию")
                                 else:
                                     use addon_info_placeholder("Установите аддоны\nчтобы увидеть информацию")
+                
                 textbutton _("Назад"):
                     xalign 0.5
                     action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return()]
