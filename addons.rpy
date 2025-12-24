@@ -1,12 +1,3 @@
-init -1000 python hide:
-    from configparser import ConfigParser
-    if "TBAddonManager.ini" in renpy.list_files():
-        ini = ConfigParser()
-        ini.read_string(renpy.file("TBAddonManager.ini").read().decode())
-        if bool(int(ini.get("gameconfig", "enabled_by_default", fallback="0"))):
-            renpy.bootstrap.tbam_initialized = True
-
-
 init -999 python in tbam_store:
 
     import os
@@ -121,20 +112,18 @@ init -999 python in tbam_store:
 
             for fn in renpy.list_files():
                 if fn.split("/")[-1] == "addon.ini":
-                    ini = ConfigParser()
-                    ini.read_string(renpy.file(fn).read().decode())
-                    for section in ini.sections():
-                        addons[section] = _Addon(
-                            label=section,
-                            name=ini[section]["name"],
-                            description=ini[section]["description"].replace("\\n", "\n").strip(),
-                            avatar=ini[section]["avatar"] if ini[section]["avatar"] != "" else None,
-                            authors=[i for i in ini[section]["authors"].split("\\n")],
-                        )
+                    try:
+                        ini = ConfigParser()
+                        ini.read_string(renpy.file(fn).read().decode())
+                        for section in ini.sections():
+                            addons[section] = _Addon(
+                                label=section,
+                                name=ini[section]["name"],
+                                description=ini[section]["description"].replace("\\n", "\n").strip(),
+                                avatar=ini[section]["avatar"] if ini[section]["avatar"] != "" else None,
+                                authors=[i for i in ini[section]["authors"].split("\\n")],
+                            )
+                    except Exception as e:
+                        print(f"There was an error in addon.ini in path \"{fn}\": {e}.")
 
         _ini_parser()
-
-init 999 python:
-    if getattr(renpy.bootstrap, "tbam_initialized", False):
-        config.console = getattr(renpy.bootstrap, "tbam_console", config.console)
-        config.developer = getattr(renpy.bootstrap, "tbam_developer", config.developer)
