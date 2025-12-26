@@ -1,26 +1,19 @@
-init:
+screen main_menu_addons:
+    tag menu
+    style_prefix "main_menu"
 
-    if getattr(renpy.bootstrap, "tbam_initialized", False):
+    use main_menu
 
-        screen main_menu_addons:
-            tag menu
-            style_prefix "main_menu"
+    imagebutton:
+        auto "TBAddonManager/assets/images/logo_%s.png"
+        hover_sound "sounds/menu/menu-button-select-3.ogg"
+        activate_sound "sounds/menu/language-sellect-1.ogg"
+        xalign 0.95
+        yalign 0.95
+        action ShowMenu("addons", _transition=Fade(0.0, 0.0, 0.5))
+        at mm_elements
 
-            use main_menu_old
+label main_menu_addons:
 
-            imagebutton:
-                auto "TBAddonManager/assets/images/logo_%s.png"
-                hover_sound "sounds/menu/menu-button-select-3.ogg"
-                activate_sound "sounds/menu/language-sellect-1.ogg"
-                xalign 0.95
-                yalign 0.95
-                action ShowMenu("addons", _transition=Fade(0.0, 0.0, 0.5))
-                at mm_elements
-            
-
-init 1 python:
-
-    if getattr(renpy.bootstrap, "tbam_initialized", False):
-
-        renpy.display.screen.screens[("main_menu_old", None)] = renpy.display.screen.screens[("main_menu", None)]
-        renpy.display.screen.screens[("main_menu", None)] = renpy.display.screen.screens[("main_menu_addons", None)]
+    call screen main_menu_addons
+    return
