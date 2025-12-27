@@ -73,7 +73,7 @@ class MainWindow(QWidget):
 
         lbl = QLabel(self)
         lbl.setStyleSheet("""
-            QLabel { color: #dcdcdc; font-family: "Razor Keen"; font-size: 48px; }
+            QLabel { font-size: 48px; }
         """)
         lbl.setText(gt("Tiny Bunny Addon Manager"))
         lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
