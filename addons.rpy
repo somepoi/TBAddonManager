@@ -5,8 +5,8 @@ init -999 python in tbam_store:
     os.system("cls")
     os.system("title \"Tiny Bunny debug console\"")
     print("Tiny Bunny with TBAddonManager started.\nConsole cleared for your convenience.")
-    print(f"config.developer will be switched to {getattr(renpy.bootstrap, 'tbam_developer', config.developer)}.")
-    print(f"config.console will be switched to {getattr(renpy.bootstrap, 'tbam_console', config.console)}.")
+    print(f"config.developer will be switched to {getattr(renpy.bootstrap, 'tbam_developer', renpy.defaultstore.config.developer)}.")
+    print(f"config.console will be switched to {getattr(renpy.bootstrap, 'tbam_console', renpy.defaultstore.config.console)}.")
 
     class _Addon:
         def __init__(self, label, name, description="", avatar=None, authors=None):
