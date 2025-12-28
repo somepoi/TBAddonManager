@@ -3,34 +3,64 @@ from locale import getdefaultlocale
 
 lang = {
     "Tiny Bunny Addon Manager": {
-        "ru_RU": "Менеджер аддонов для игры Tiny Bunny"
+        "ru_RU": "Менеджер аддонов для игры Tiny Bunny",
     },
     "Developer mode": {
-        "ru_RU": "Режим разработчика"
+        "ru_RU": "Режим разработчика",
     },
     "Game will have developer mode enabled (config.developer).": {
-        "ru_RU": "В игре будет включён режим разработчика (config.developer)."
+        "ru_RU": "В игре будет включён режим разработчика (config.developer).",
     },
     "In-game console": {
-        "ru_RU": "Внутриигровая консоль"
+        "ru_RU": "Внутриигровая консоль",
     },
     "Game will have in-game console enabled (config.console).": {
-        "ru_RU": "В игре будет включена внутриигровая консоль (config.console)."
+        "ru_RU": "В игре будет включена внутриигровая консоль (config.console).",
     },
     "External console": {
-        "ru_RU": "Внешняя консоль"
+        "ru_RU": "Внешняя консоль",
     },
     "Game will launch with external console enabled, allowing easier debugging of addons.": {
-        "ru_RU": "Игра будет запущена с внешней консолью, что упростит отладку аддонов."
+        "ru_RU": "Игра будет запущена с внешней консолью, что упростит отладку аддонов.",
     },
     "Launch the game!": {
-        "ru_RU": "Запустить игру!"
+        "ru_RU": "Запустить игру!",
+    },
+    "Will start the game with selected features.": {
+        "ru_RU": "Запустит игру с выбранными функциями.",
+    },
+    "Install game components": {
+        "ru_RU": "Установить игровые компоненты",
+    },
+    "Will install game components of the manager.": {
+        "ru_RU": "Установит игровые компоненты менеджера.",
     },
     "Error!": {
-        "ru_RU": "Ошибка!"
+        "ru_RU": "Ошибка!",
     },
     "The program could not find Tiny Bunny game folder!": {
-        "ru_RU": "Программа не смогла найти папку игры Tiny Bunny!"
+        "ru_RU": "Программа не смогла найти папку игры Tiny Bunny!",
+    },
+    "Cannot get local files! Are game component files installed?": {
+        "ru_RU": "Невозможно найти локальные файлы! Установлены ли файлы компонентов игры?",
+    },
+    "Cannot get remote files! Please, check your internet connection.": {
+        "ru_RU": "Невозможно получить удаленные файлы! Пожалуйста, проверьте подключение к Интернету.",
+    },
+    "The current version of the game component files ({0}) is outdated.\nPlease update them to the latest version ({1}).": {
+        "ru_RU": "Текущая версия файлов компонентов игры ({0}) устарела.\nПожалуйста, обновите их до последней версии ({1}).",
+    },
+    "The current version of the game component files is up to date! ({0})": {
+        "ru_RU": "Текущая версия файлов компонентов игры актуальна! ({0})",
+    },
+    "Starting the download...": {
+        "ru_RU": "Начинаем загрузку...",
+    },
+    "{0} bytes downloaded...": {
+        "ru_RU": "{0} байтов скачано...",
+    },
+    "Unpacking \"{0}\", {1} out of {2} files...": {
+        "ru_RU": "Распаковываем \"{0}\", {1} из {2} файлов...",
     }
 }
 

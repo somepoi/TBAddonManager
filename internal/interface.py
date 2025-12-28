@@ -1,30 +1,31 @@
 from PySide6.QtCore import (
     QEvent,
-    QStandardPaths,
+    QObject,
     QThread,
+    QThreadPool,
     Qt,
     Signal,
+    Slot,
 )
 from PySide6.QtGui import (
     QFontDatabase,
     QIcon,
 )
 from PySide6.QtWidgets import (
-    QApplication,
     QCheckBox,
     QHBoxLayout,
     QLabel,
-    QMessageBox,
     QPushButton,
     QVBoxLayout,
     QWidget,
 )
 from pathlib import Path
-import subprocess, sys, os
+import subprocess
 
 import internal.resources_rc
 from internal.lang import gt
-from internal.config import save, load
+import internal.config
+from internal.downloading import text_game, DownloadGameRunner
 
 def init_fonts():
     fonts = {}
@@ -50,6 +51,18 @@ class GameRunner(QThread):
         subprocess.run(self.args, creationflags=subprocess.CREATE_NEW_CONSOLE if self.visible else subprocess.CREATE_NO_WINDOW)
         self.finished.emit()
 
+class StatusController(QObject):
+    def __init__(self, label: QLabel):
+        super().__init__()
+        self.label = label
+
+    @Slot(str, list)
+    def set_label_text(self, fmt, args):
+        self.label.setStyleSheet("""
+            QLabel { font-size: 20px; color: #ff0; }
+        """)
+        self.label.setText(gt(fmt).format(*args))
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -62,6 +75,16 @@ class MainWindow(QWidget):
             QPushButton { background-color: rgba(255,255,255,0.05); border: 4px outset rgba(32,32,32,1.0); padding: 8px 32px; }
             QPushButton:hover { background-color: rgba(255,255,255,0.15); border: 4px outset rgba(32,32,32,1.0); }
             QPushButton:pressed { background-color: rgba(255,255,255,0.05); border: 4px inset rgba(32,32,32,1.0); }
+            QPushButton:disabled { color: #333; border: 4px inset rgba(16,16,16,1.0); }
+
+            QCheckBox:hover { color: #999; }
+            QCheckBox:pressed { color: #888; }
+            QCheckBox:disabled { color: #333; }
+
+            QCheckBox::indicator { width: 12px; height: 12px; border: 1px solid #333; background: #666; }
+            QCheckBox::indicator:hover { background: #333; }
+            QCheckBox::indicator:pressed { background: #555; }
+            QCheckBox::indicator:checked { image: url(:/img/check.png); }
         """)
 
         # Main Layout and Logo
@@ -82,18 +105,16 @@ class MainWindow(QWidget):
         # CheckBoxes
         layout_cb = QHBoxLayout()
         layout_cb.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout_cb.setSpacing(32)
-        self.cb_enabled_by_default = QCheckBox()
         self.cb_developer = QCheckBox()
         self.cb_console = QCheckBox()
         self.cb_extconsole = QCheckBox()
-        for var, text, tooltip in [
-            (self.cb_developer,             gt("Developer mode"),                  gt("Game will have developer mode enabled (config.developer).")),
-            (self.cb_console,               gt("In-game console"),                 gt("Game will have in-game console enabled (config.console).")),
-            (self.cb_extconsole,            gt("External console"),                gt("Game will launch with external console enabled, allowing easier debugging of addons.")),
+        for var, text, tt in [
+            (self.cb_developer,     "Developer mode",   "Game will have developer mode enabled (config.developer)."),
+            (self.cb_console,       "In-game console",  "Game will have in-game console enabled (config.console)."),
+            (self.cb_extconsole,    "External console", "Game will launch with external console enabled, allowing easier debugging of addons."),
         ]:
-            var.setText(text)
-            var.setToolTip(tooltip)
+            var.setText(gt(text))
+            var.setToolTip(gt(tt))
             layout_cb.addWidget(var)
         self.main_layout.addLayout(layout_cb)
         self.main_layout.addSpacing(8)
@@ -101,32 +122,85 @@ class MainWindow(QWidget):
         # Buttons
         layout_btn = QHBoxLayout()
         layout_btn.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.btn_start = QPushButton(gt("Launch the game!"))
-        self.btn_start.clicked.connect(self._start_game)
-        layout_btn.addWidget(self.btn_start)
+        self.btn_game = QPushButton()
+        self.btn_install = QPushButton()
+        for var, func, text, tt in [
+            (self.btn_game,     self._start_game,      "Launch the game!",         "Will start the game with selected features."),
+            (self.btn_install,  self._start_install,   "Install game components",  "Will install game components of the manager."),
+        ]:
+            var.setText(gt(text))
+            var.setToolTip(gt(tt))
+            var.clicked.connect(func)
+            layout_btn.addWidget(var)
         self.main_layout.addLayout(layout_btn)
+
+        self.lbl_status = QLabel()
+        self.lbl_status.setStyleSheet("""
+            QLabel { font-size: 20px; }
+        """)
+        self.lbl_status.setText("\n")
+        self.lbl_status.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(self.lbl_status)
 
         self.setFixedSize(self.layout().sizeHint())
 
-        config_values = load()
+        self.download_thread = QThread()
+        self.download_threadpool = QThreadPool()
+
+        self.update_status()
+
+    def showEvent(self, event):
+
+        config_values = internal.config.load()
 
         self.cb_developer.setChecked(config_values[0])
         self.cb_console.setChecked(config_values[1])
         self.cb_extconsole.setChecked(config_values[2])
 
+    def update_status(self):
+
+        game_version = text_game()
+        self.lbl_status.setStyleSheet(f"""
+            QLabel {{ font-size: 20px; color: {"#c33" if game_version[1] == [None] else "#dcdcdc"}; }}
+        """)
+        self.lbl_status.setText(gt(game_version[0]).format(*game_version[1]))
+
     def _start_game(self):
 
-        save(self.cb_developer.isChecked(), self.cb_console.isChecked(), self.cb_extconsole.isChecked())
+        internal.config.save(self.cb_developer.isChecked(), self.cb_console.isChecked(), self.cb_extconsole.isChecked())
 
-        args = [str(Path(sys.executable).parent / "lib" / "py3-windows-x86_64" / ("python.exe" if self.cb_extconsole.isChecked() else "pythonw.exe")), str(Path(sys.executable).parent / "TinyBunny.py")]
+        args = [str(Path(internal.config.working_path) / "lib" / "py3-windows-x86_64" / ("python.exe" if self.cb_extconsole.isChecked() else "pythonw.exe")), str(Path(internal.config.working_path) / "TinyBunny.py")]
 
         self.process = GameRunner(self, args, self.cb_extconsole.isChecked())
-        self.process.finished.connect(self._on_process_finished)
+        self.process.finished.connect(self._on_finish_game)
         self.hide()
         self.process.run()
 
-    def _on_process_finished(self):
+    def _on_finish_game(self):
         self.show()
 
+    def _start_install(self):
+
+        [obj.setEnabled(False) for obj in [self.cb_console, self.cb_developer, self.cb_extconsole, self.btn_game, self.btn_install]]
+
+        self.thread = QThread()
+        self.worker = DownloadGameRunner()
+        self.status_controller = StatusController(self.lbl_status)
+        self.worker.moveToThread(self.thread)
+
+        self.worker.status.connect(self.status_controller.set_label_text)
+        self.worker.finished.connect(self._on_finish_install)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.worker.finished.connect(self.thread.deleteLater)
+
+        self.thread.started.connect(self.worker.run)
+        self.thread.start()
+
+    def _on_finish_install(self):
+
+        [obj.setEnabled(True) for obj in [self.cb_console, self.cb_developer, self.cb_extconsole, self.btn_game, self.btn_install]]
+        self.update_status()
+
     def closeEvent(self, event: QEvent):
-        save(self.cb_developer.isChecked(), self.cb_console.isChecked(), self.cb_extconsole.isChecked())
+        internal.config.save(self.cb_developer.isChecked(), self.cb_console.isChecked(), self.cb_extconsole.isChecked())
