@@ -128,5 +128,4 @@ init -999 python in tbam_store:
                     print(f"There was an error in addon.ini in path \"{fn}\": {e}.")
 
     _ini_parser()
-
-    renpy.game.script.namemap["main_menu"] = renpy.game.script.namemap["main_menu_addons"]
+    

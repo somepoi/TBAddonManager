@@ -217,4 +217,4 @@ init -999:
                 style "addons_button"
                 xalign 0.5
                 keysym "game_menu"
-                action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return(), Jump("main_menu")]
+                action [SetField(tbam_store, "addon_search_query", ""), SetField(tbam_store, "selected_addon", ""), Return()]
