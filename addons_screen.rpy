@@ -141,7 +141,7 @@ init -999:
                                                         vbox:
                                                             style "addons_list_item_vbox"
 
-                                                            text addon.get_truncated_name(60):
+                                                            text addon.get_truncated_name():
                                                                 style "addons_list_item_name_text"
 
                                                             if addon.authors:
