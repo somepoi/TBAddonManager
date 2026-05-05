@@ -2,7 +2,7 @@
 
 Менеджер аддонов для визуальной новеллы ["Зайчик"](https://store.steampowered.com/app/1421250/Tiny_Bunny/).
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue.svg)
 ![RenPy](https://img.shields.io/badge/RenPy-8-red.svg)
 ![Preview](preview.png)
